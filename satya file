@@ -1,0 +1,53 @@
+package com.demo.selenium.weekdayNightbatch730830;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class WorkingWithReadDataFromExcel {
+
+	public void tc() throws IOException, InterruptedException{
+		ArrayList<String> un=readData(0);
+		ArrayList<String> pw=readData(1);
+		for(int i=0;i<un.size();i++){
+			System.setProperty("webdriver.chrome.driver", "/Users/satyabratarout/Desktop/chromedriver");
+			WebDriver d = new ChromeDriver();
+			d.get("http://demo.guru99.com/v4/");
+			d.manage().window().maximize();
+
+			d.findElement(By.name("uid")).sendKeys(un.get(i));
+			d.findElement(By.name("password")).sendKeys(pw.get(i));
+			d.findElement(By.name("btnLogin")).click();
+			Thread.sleep(2000);
+			d.switchTo().alert().accept();
+			Thread.sleep(2000);
+			d.close();
+		}
+	}
+
+	public static ArrayList<String> readData(int i) throws IOException {
+		FileInputStream fis = new FileInputStream("/Users/satyabratarout/Desktop/NumericDataExtractData.xlsx");
+		XSSFWorkbook wb = new XSSFWorkbook(fis);
+		//HSSFWorkbook 
+		XSSFSheet sh=wb.getSheet("Sheet1");
+		Iterator<Row> row= sh.iterator();
+		row.next();
+		ArrayList<String> ls = new ArrayList<>();
+		while(row.hasNext()){
+			ls.add(row.next().getCell(i).getStringCellValue());
+		}
+		return ls;
+	}
+	public static void main(String[] args) throws IOException, InterruptedException {
+		WorkingWithReadDataFromExcel w = new WorkingWithReadDataFromExcel();
+		w.tc();
+	}
+}
